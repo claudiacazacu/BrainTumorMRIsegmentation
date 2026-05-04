@@ -15,8 +15,8 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 MODEL_PATH = "models/unet_brain_tumor.pth"
 
-IMAGE_PATH = "dataset/images/test/brisc2025_test_00018_gl_ax_t1.jpg"
-MASK_PATH = "dataset/masks/test/brisc2025_test_00018_gl_ax_t1.png"
+IMAGE_PATH = "dataset/images/test/brisc2025_test_00906_pi_co_t1.jpg"
+MASK_PATH = "dataset/masks/test/brisc2025_test_00906_pi_co_t1.png"
 
 OUTPUT_DIR = Path("outputs/predictions")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

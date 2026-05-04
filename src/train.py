@@ -1,5 +1,13 @@
-import sys
+﻿import sys
+import json
+import csv
+import shutil
+from datetime import datetime
 from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 import torch
 from torch.utils.data import DataLoader
@@ -15,9 +23,9 @@ from metrics import dice_score, iou_score
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-BATCH_SIZE = 8
-EPOCHS = 40
-LEARNING_RATE = 5e-5
+BATCH_SIZE = 4
+EPOCHS = 20
+LEARNING_RATE = 1e-4
 
 TRAIN_IMAGES_DIR = "dataset/images/train"
 TRAIN_MASKS_DIR = "dataset/masks/train"
@@ -25,7 +33,8 @@ TRAIN_MASKS_DIR = "dataset/masks/train"
 VAL_IMAGES_DIR = "dataset/images/val"
 VAL_MASKS_DIR = "dataset/masks/val"
 
-MODEL_SAVE_PATH = "models/unet_brain_tumor.pth"
+FINAL_MODEL_PATH = Path("models/unet_brain_tumor.pth")
+EXPERIMENTS_DIR = Path("experiments")
 
 
 def train_one_epoch(model, dataloader, optimizer, loss_fn):
@@ -106,10 +115,109 @@ def validate(model, dataloader, loss_fn):
     return avg_loss, avg_dice, avg_iou
 
 
+def create_run_folder():
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_folder = EXPERIMENTS_DIR / f"run_{timestamp}"
+    run_folder.mkdir(parents=True, exist_ok=True)
+    return run_folder
+
+
+def save_config(run_folder, image_size):
+    config = {
+        "project": "Brain Tumor MRI Segmentation",
+        "model": "U-Net",
+        "framework": "PyTorch",
+        "loss_function": "BCE + Dice Loss",
+        "optimizer": "Adam",
+        "device": DEVICE,
+        "epochs": EPOCHS,
+        "batch_size": BATCH_SIZE,
+        "learning_rate": LEARNING_RATE,
+        "image_size": image_size,
+        "train_images_dir": TRAIN_IMAGES_DIR,
+        "train_masks_dir": TRAIN_MASKS_DIR,
+        "val_images_dir": VAL_IMAGES_DIR,
+        "val_masks_dir": VAL_MASKS_DIR
+    }
+
+    with open(run_folder / "config.json", "w", encoding="utf-8") as file:
+        json.dump(config, file, indent=4)
+
+
+def save_history(run_folder, history):
+    csv_path = run_folder / "training_history.csv"
+    json_path = run_folder / "training_history.json"
+
+    fieldnames = [
+        "epoch",
+        "train_loss",
+        "val_loss",
+        "train_dice",
+        "val_dice",
+        "train_iou",
+        "val_iou"
+    ]
+
+    with open(csv_path, "w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(history)
+
+    with open(json_path, "w", encoding="utf-8") as file:
+        json.dump(history, file, indent=4)
+
+
+def save_plots(run_folder, history):
+    epochs = [row["epoch"] for row in history]
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(epochs, [row["train_loss"] for row in history], label="Train Loss")
+    plt.plot(epochs, [row["val_loss"] for row in history], label="Validation Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Training and Validation Loss")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(run_folder / "loss.png")
+    plt.close()
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(epochs, [row["train_dice"] for row in history], label="Train Dice")
+    plt.plot(epochs, [row["val_dice"] for row in history], label="Validation Dice")
+    plt.xlabel("Epoch")
+    plt.ylabel("Dice Score")
+    plt.title("Training and Validation Dice Score")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(run_folder / "dice.png")
+    plt.close()
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(epochs, [row["train_iou"] for row in history], label="Train IoU")
+    plt.plot(epochs, [row["val_iou"] for row in history], label="Validation IoU")
+    plt.xlabel("Epoch")
+    plt.ylabel("IoU Score")
+    plt.title("Training and Validation IoU Score")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(run_folder / "iou.png")
+    plt.close()
+
+
 def main():
     print(f"Using device: {DEVICE}")
+    print("Starting training from scratch.")
 
-    Path("models").mkdir(exist_ok=True)
+    FINAL_MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    EXPERIMENTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    run_folder = create_run_folder()
+    best_model_path = run_folder / "best_model.pth"
+
+    print(f"Experiment folder: {run_folder}")
 
     train_dataset = BrainTumorDataset(
         images_dir=TRAIN_IMAGES_DIR,
@@ -133,20 +241,18 @@ def main():
         shuffle=False
     )
 
+    sample_image, _ = train_dataset[0]
+    image_size = list(sample_image.shape[1:])
+
+    save_config(run_folder, image_size)
+
     model = UNet(in_channels=1, out_channels=1).to(DEVICE)
-
-    best_val_dice = 0.0
-
-    if Path(MODEL_SAVE_PATH).exists():
-        checkpoint = torch.load(MODEL_SAVE_PATH, map_location=DEVICE)
-        model.load_state_dict(checkpoint["model_state_dict"])
-        best_val_dice = checkpoint.get("best_val_dice", 0.0)
-
-        print(f"Loaded previous model from {MODEL_SAVE_PATH}")
-        print(f"Previous best Dice: {best_val_dice:.4f}")
 
     loss_fn = BCEDiceLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+
+    best_val_dice = 0.0
+    history = []
 
     for epoch in range(EPOCHS):
         print(f"\nEpoch [{epoch + 1}/{EPOCHS}]")
@@ -164,6 +270,16 @@ def main():
             loss_fn
         )
 
+        history.append({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "val_loss": val_loss,
+            "train_dice": train_dice,
+            "val_dice": val_dice,
+            "train_iou": train_iou,
+            "val_iou": val_iou
+        })
+
         print(
             f"Train Loss: {train_loss:.4f} | "
             f"Train Dice: {train_dice:.4f} | "
@@ -179,22 +295,27 @@ def main():
         if val_dice > best_val_dice:
             best_val_dice = val_dice
 
-            torch.save(
-                {
-                    "model_state_dict": model.state_dict(),
-                    "best_val_dice": best_val_dice,
-                    "epoch": epoch + 1,
-                    "batch_size": BATCH_SIZE,
-                    "learning_rate": LEARNING_RATE
-                },
-                MODEL_SAVE_PATH
-            )
+            checkpoint = {
+                "model_state_dict": model.state_dict(),
+                "best_val_dice": best_val_dice,
+                "epoch": epoch + 1,
+                "batch_size": BATCH_SIZE,
+                "learning_rate": LEARNING_RATE
+            }
+
+            torch.save(checkpoint, best_model_path)
+            shutil.copy2(best_model_path, FINAL_MODEL_PATH)
 
             print(f"Saved best model with Dice: {best_val_dice:.4f}")
 
+    save_history(run_folder, history)
+    save_plots(run_folder, history)
+
     print("\nTraining finished.")
+    print(f"Experiment folder: {run_folder.resolve()}")
     print(f"Best validation Dice: {best_val_dice:.4f}")
-    print(f"Model saved at: {MODEL_SAVE_PATH}")
+    print(f"Best model path: {best_model_path.resolve()}")
+    print(f"Streamlit model path: {FINAL_MODEL_PATH.resolve()}")
 
 
 if __name__ == "__main__":
