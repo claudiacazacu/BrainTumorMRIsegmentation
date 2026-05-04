@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+*.env
+
+# Conda
+.conda/
+conda-meta/
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Dataset folders
+dataset_raw/
+dataset/
+
+# Model checkpoints
+models/
+*.pth
+*.pt
+*.ckpt
+
+# Outputs / generated files
+outputs/
+runs/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
