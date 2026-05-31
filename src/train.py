@@ -25,7 +25,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 BATCH_SIZE = 4
 EPOCHS = 20
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-3
 
 TRAIN_IMAGES_DIR = "dataset/images/train"
 TRAIN_MASKS_DIR = "dataset/masks/train"
@@ -170,6 +170,41 @@ def save_history(run_folder, history):
 def save_plots(run_folder, history):
     epochs = [row["epoch"] for row in history]
 
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    fig.suptitle("Training vs Validation Metrics", fontsize=14, fontweight="bold")
+
+    # Loss
+    axes[0].plot(epochs, [row["train_loss"] for row in history], label="Train", color="#1f77b4")
+    axes[0].plot(epochs, [row["val_loss"] for row in history], label="Validation", color="#ff7f0e", linestyle="--")
+    axes[0].set_xlabel("Epoch")
+    axes[0].set_ylabel("Loss")
+    axes[0].set_title("Loss")
+    axes[0].legend()
+    axes[0].grid(True)
+
+    # Dice
+    axes[1].plot(epochs, [row["train_dice"] for row in history], label="Train", color="#1f77b4")
+    axes[1].plot(epochs, [row["val_dice"] for row in history], label="Validation", color="#ff7f0e", linestyle="--")
+    axes[1].set_xlabel("Epoch")
+    axes[1].set_ylabel("Dice Score")
+    axes[1].set_title("Dice Score")
+    axes[1].legend()
+    axes[1].grid(True)
+
+    # IoU
+    axes[2].plot(epochs, [row["train_iou"] for row in history], label="Train", color="#1f77b4")
+    axes[2].plot(epochs, [row["val_iou"] for row in history], label="Validation", color="#ff7f0e", linestyle="--")
+    axes[2].set_xlabel("Epoch")
+    axes[2].set_ylabel("IoU Score")
+    axes[2].set_title("IoU Score")
+    axes[2].legend()
+    axes[2].grid(True)
+
+    plt.tight_layout()
+    plt.savefig(run_folder / "combined_metrics.png", dpi=150)
+    plt.close()
+
+    # Keep individual plots for backward compatibility
     plt.figure(figsize=(8, 5))
     plt.plot(epochs, [row["train_loss"] for row in history], label="Train Loss")
     plt.plot(epochs, [row["val_loss"] for row in history], label="Validation Loss")
@@ -204,6 +239,50 @@ def save_plots(run_folder, history):
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(run_folder / "iou.png")
+    plt.close()
+
+
+def save_metrics_table(run_folder, history):
+    """Save a PNG table with final epoch metrics (best val dice epoch + last epoch)."""
+    best = max(history, key=lambda r: r["val_dice"])
+    last = history[-1]
+
+    rows = [
+        ["Metric", "Best Val Dice Epoch", "Final Epoch"],
+        ["Epoch", str(best["epoch"]), str(last["epoch"])],
+        ["Train Loss", f"{best['train_loss']:.4f}", f"{last['train_loss']:.4f}"],
+        ["Val Loss", f"{best['val_loss']:.4f}", f"{last['val_loss']:.4f}"],
+        ["Train Dice", f"{best['train_dice']:.4f}", f"{last['train_dice']:.4f}"],
+        ["Val Dice", f"{best['val_dice']:.4f}", f"{last['val_dice']:.4f}"],
+        ["Train IoU", f"{best['train_iou']:.4f}", f"{last['train_iou']:.4f}"],
+        ["Val IoU", f"{best['val_iou']:.4f}", f"{last['val_iou']:.4f}"],
+    ]
+
+    fig, ax = plt.subplots(figsize=(8, 3.5))
+    ax.axis("off")
+
+    table = ax.table(
+        cellText=rows[1:],
+        colLabels=rows[0],
+        loc="center",
+        cellLoc="center"
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1.2, 1.6)
+
+    # Header row styling
+    for col in range(3):
+        table[(0, col)].set_facecolor("#2c7bb6")
+        table[(0, col)].set_text_props(color="white", fontweight="bold")
+
+    # Highlight best val dice row (row index 4 = Val Dice)
+    for col in range(3):
+        table[(5, col)].set_facecolor("#d4edda")
+
+    ax.set_title("Model Performance Metrics", fontsize=13, fontweight="bold", pad=12)
+    plt.tight_layout()
+    plt.savefig(run_folder / "metrics_table.png", dpi=150, bbox_inches="tight")
     plt.close()
 
 
@@ -310,6 +389,7 @@ def main():
 
     save_history(run_folder, history)
     save_plots(run_folder, history)
+    save_metrics_table(run_folder, history)
 
     print("\nTraining finished.")
     print(f"Experiment folder: {run_folder.resolve()}")
