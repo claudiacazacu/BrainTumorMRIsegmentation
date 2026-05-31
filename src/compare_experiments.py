@@ -59,17 +59,19 @@ def load_runs():
 
 def save_comparison_table(runs, output_path):
     """Salveaza un tabel PNG cu metrici finale pentru fiecare run."""
-    headers = ["Run", "LR", "Batch", "Epochs", "Best Val Dice", "Best Val IoU", "Final Val Loss"]
+    headers = ["Run", "LR", "Batch", "Epochs", "Augment", "Best Val Dice", "Best Val IoU", "Final Val Loss"]
 
     rows = []
     for r in runs:
         cfg = r["config"]
         best = r["best"]
+        augment = cfg.get("augmentation", False)
         rows.append([
             r["name"],
             str(cfg.get("learning_rate", "—")),
             str(cfg.get("batch_size", "—")),
             str(cfg.get("epochs", "—")),
+            "Yes" if augment else "No",
             f"{best['val_dice']:.4f}",
             f"{best['val_iou']:.4f}",
             f"{r['last']['val_loss']:.4f}",
@@ -94,8 +96,8 @@ def save_comparison_table(runs, output_path):
         table[(0, col)].set_facecolor("#2c7bb6")
         table[(0, col)].set_text_props(color="white", fontweight="bold")
 
-    # Highlight best val dice row
-    best_idx = max(range(len(rows)), key=lambda i: float(rows[i][4]))
+    # Highlight best val dice row (col 5 = Best Val Dice)
+    best_idx = max(range(len(rows)), key=lambda i: float(rows[i][5]))
     for col in range(len(headers)):
         table[(best_idx + 1, col)].set_facecolor("#d4edda")
 

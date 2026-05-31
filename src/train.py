@@ -25,7 +25,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 BATCH_SIZE = 4
 EPOCHS = 20
-LEARNING_RATE = 1e-3
+LEARNING_RATE = 1e-4
 
 TRAIN_IMAGES_DIR = "dataset/images/train"
 TRAIN_MASKS_DIR = "dataset/masks/train"
@@ -133,6 +133,7 @@ def save_config(run_folder, image_size):
         "epochs": EPOCHS,
         "batch_size": BATCH_SIZE,
         "learning_rate": LEARNING_RATE,
+        "augmentation": True,
         "image_size": image_size,
         "train_images_dir": TRAIN_IMAGES_DIR,
         "train_masks_dir": TRAIN_MASKS_DIR,
@@ -300,12 +301,14 @@ def main():
 
     train_dataset = BrainTumorDataset(
         images_dir=TRAIN_IMAGES_DIR,
-        masks_dir=TRAIN_MASKS_DIR
+        masks_dir=TRAIN_MASKS_DIR,
+        augment=True
     )
 
     val_dataset = BrainTumorDataset(
         images_dir=VAL_IMAGES_DIR,
-        masks_dir=VAL_MASKS_DIR
+        masks_dir=VAL_MASKS_DIR,
+        augment=False
     )
 
     train_loader = DataLoader(
