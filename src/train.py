@@ -24,7 +24,7 @@ from metrics import dice_score, iou_score
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 BATCH_SIZE = 4
-EPOCHS = 20
+EPOCHS = 40
 LEARNING_RATE = 1e-4
 
 TRAIN_IMAGES_DIR = "dataset/images/train"
@@ -171,38 +171,43 @@ def save_history(run_folder, history):
 def save_plots(run_folder, history):
     epochs = [row["epoch"] for row in history]
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
-    fig.suptitle("Training vs Validation Metrics", fontsize=14, fontweight="bold")
+    LW = 2.5  # line width
+
+    fig, axes = plt.subplots(1, 3, figsize=(10, 3))
+    fig.suptitle("Training vs Validation Metrics", fontsize=11, fontweight="bold")
 
     # Loss
-    axes[0].plot(epochs, [row["train_loss"] for row in history], label="Train", color="#1f77b4")
-    axes[0].plot(epochs, [row["val_loss"] for row in history], label="Validation", color="#ff7f0e", linestyle="--")
-    axes[0].set_xlabel("Epoch")
-    axes[0].set_ylabel("Loss")
-    axes[0].set_title("Loss")
-    axes[0].legend()
-    axes[0].grid(True)
+    axes[0].plot(epochs, [row["train_loss"] for row in history], label="Train", color="#1f77b4", linewidth=LW)
+    axes[0].plot(epochs, [row["val_loss"] for row in history], label="Val", color="#ff7f0e", linestyle="--", linewidth=LW)
+    axes[0].set_xlabel("Epoch", fontsize=8)
+    axes[0].set_ylabel("Loss", fontsize=8)
+    axes[0].set_title("Loss", fontsize=9)
+    axes[0].legend(fontsize=7)
+    axes[0].tick_params(labelsize=7)
+    axes[0].grid(True, linewidth=0.5)
 
     # Dice
-    axes[1].plot(epochs, [row["train_dice"] for row in history], label="Train", color="#1f77b4")
-    axes[1].plot(epochs, [row["val_dice"] for row in history], label="Validation", color="#ff7f0e", linestyle="--")
-    axes[1].set_xlabel("Epoch")
-    axes[1].set_ylabel("Dice Score")
-    axes[1].set_title("Dice Score")
-    axes[1].legend()
-    axes[1].grid(True)
+    axes[1].plot(epochs, [row["train_dice"] for row in history], label="Train", color="#1f77b4", linewidth=LW)
+    axes[1].plot(epochs, [row["val_dice"] for row in history], label="Val", color="#ff7f0e", linestyle="--", linewidth=LW)
+    axes[1].set_xlabel("Epoch", fontsize=8)
+    axes[1].set_ylabel("Dice Score", fontsize=8)
+    axes[1].set_title("Dice Score", fontsize=9)
+    axes[1].legend(fontsize=7)
+    axes[1].tick_params(labelsize=7)
+    axes[1].grid(True, linewidth=0.5)
 
     # IoU
-    axes[2].plot(epochs, [row["train_iou"] for row in history], label="Train", color="#1f77b4")
-    axes[2].plot(epochs, [row["val_iou"] for row in history], label="Validation", color="#ff7f0e", linestyle="--")
-    axes[2].set_xlabel("Epoch")
-    axes[2].set_ylabel("IoU Score")
-    axes[2].set_title("IoU Score")
-    axes[2].legend()
-    axes[2].grid(True)
+    axes[2].plot(epochs, [row["train_iou"] for row in history], label="Train", color="#1f77b4", linewidth=LW)
+    axes[2].plot(epochs, [row["val_iou"] for row in history], label="Val", color="#ff7f0e", linestyle="--", linewidth=LW)
+    axes[2].set_xlabel("Epoch", fontsize=8)
+    axes[2].set_ylabel("IoU Score", fontsize=8)
+    axes[2].set_title("IoU Score", fontsize=9)
+    axes[2].legend(fontsize=7)
+    axes[2].tick_params(labelsize=7)
+    axes[2].grid(True, linewidth=0.5)
 
     plt.tight_layout()
-    plt.savefig(run_folder / "combined_metrics.png", dpi=150)
+    plt.savefig(run_folder / "combined_metrics.png", dpi=200, bbox_inches="tight")
     plt.close()
 
     # Keep individual plots for backward compatibility

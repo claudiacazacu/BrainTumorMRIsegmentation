@@ -1,0 +1,20 @@
+{
+    "project": "Brain Tumor MRI Segmentation",
+    "model": "U-Net",
+    "framework": "PyTorch",
+    "loss_function": "BCE + Dice Loss",
+    "optimizer": "Adam",
+    "device": "cuda",
+    "epochs": 20,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "augmentation": true,
+    "image_size": [
+        256,
+        256
+    ],
+    "train_images_dir": "dataset/images/train",
+    "train_masks_dir": "dataset/masks/train",
+    "val_images_dir": "dataset/images/val",
+    "val_masks_dir": "dataset/masks/val"
+}
