@@ -17,103 +17,212 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Background & base */
-    .stApp {
-        background-color: #3d4f70;
-        color: #f0f2f6;
+    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
+
+    html, body, .stApp {
+        background-color: #2e3d57;
+        color: #e8ecf2;
+        font-family: 'Sora', sans-serif;
     }
 
-    [data-testid="stHeader"] {
-        background-color: rgba(45, 57, 82, 0.95);
-    }
+    [data-testid="stHeader"] { background-color: transparent; }
+    [data-testid="stAppViewContainer"] { padding-top: 0; }
+    [data-testid="stMainBlockContainer"] { padding-top: 0; }
 
-    /* Sidebar-style top bar */
-    .app-header {
-        background: linear-gradient(135deg, #2d3952 0%, #4a5d80 100%);
-        border-radius: 12px;
-        padding: 1.8rem 2rem 1.4rem 2rem;
-        margin-bottom: 1.8rem;
-        border: 1px solid rgba(255,255,255,0.08);
+    /* ── Hero ── */
+    .hero {
+        background: linear-gradient(135deg, #1a2540 0%, #2d3f60 60%, #3a4f72 100%);
+        border-radius: 16px;
+        padding: 2.8rem 2.5rem 2.4rem 2.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255,255,255,0.09);
+        position: relative;
+        overflow: hidden;
     }
-    .app-header h1 {
-        margin: 0;
-        font-size: 1.8rem;
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 220px; height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(100,140,200,0.15) 0%, transparent 70%);
+    }
+    .hero::after {
+        content: '';
+        position: absolute;
+        bottom: -40px; left: 30%;
+        width: 300px; height: 150px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(80,120,180,0.1) 0%, transparent 70%);
+    }
+    .hero h1 {
+        margin: 0 0 0.6rem 0;
+        font-size: 2.2rem;
         font-weight: 700;
         color: #ffffff;
-        letter-spacing: 0.01em;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
     }
-    .app-header p {
-        margin: 0.3rem 0 0 0;
-        font-size: 0.9rem;
-        color: rgba(255,255,255,0.55);
+    .hero p {
+        margin: 0 0 1.4rem 0;
+        font-size: 0.92rem;
+        color: rgba(255,255,255,0.45);
+        font-weight: 300;
+        max-width: 540px;
     }
-
-    /* Upload area */
-    [data-testid="stFileUploader"] {
-        background-color: rgba(25, 30, 45, 0.5);
-        border: 1.5px dashed rgba(255,255,255,0.2);
-        border-radius: 10px;
-        padding: 0.5rem 1rem;
+    .hero-links {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
     }
-
-    /* Result cards */
-    .result-card {
-        background: rgba(25, 30, 50, 0.55);
-        border-radius: 10px;
-        padding: 1rem 1rem 0.6rem 1rem;
-        border: 1px solid rgba(255,255,255,0.08);
-    }
-    .result-card h4 {
-        margin: 0 0 0.6rem 0;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: rgba(255,255,255,0.6);
-    }
-
-    /* Metric badge */
-    .metric-badge {
+    .hero-tag {
         display: inline-block;
-        background: linear-gradient(135deg, #e05555 0%, #b03030 100%);
-        color: white;
-        font-size: 1rem;
-        font-weight: 700;
-        padding: 0.5rem 1.2rem;
-        border-radius: 8px;
-        margin-top: 0.4rem;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.6);
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
     }
-    .metric-label {
+    .hero-github {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: rgba(255,255,255,0.75) !important;
         font-size: 0.78rem;
-        color: rgba(255,255,255,0.5);
-        margin-top: 0.3rem;
+        font-weight: 500;
+        padding: 0.35rem 0.9rem;
+        border-radius: 20px;
+        text-decoration: none !important;
+        transition: background 0.2s;
+    }
+    .hero-github:hover {
+        background: rgba(255,255,255,0.15);
+        color: white !important;
     }
 
-    /* Divider */
+    /* ── Upload ── */
+    [data-testid="stFileUploader"] {
+        background-color: rgba(15, 20, 38, 0.45);
+        border: 1.5px dashed rgba(255,255,255,0.13);
+        border-radius: 10px;
+        padding: 0.4rem 0.8rem;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.3);
+        margin-bottom: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    /* ── Divider ── */
     .divider {
         border: none;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        margin: 1.5rem 0;
+        border-top: 1px solid rgba(255,255,255,0.07);
+        margin: 1.8rem 0;
     }
 
-    /* Footer */
+    /* ── Result cards ── */
+    .result-card {
+        background: rgba(15, 20, 38, 0.5);
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid rgba(255,255,255,0.07);
+        height: 100%;
+    }
+    .result-card .card-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.38);
+        margin-bottom: 0.7rem;
+    }
+
+    /* ── Metric ── */
+    .metric-wrap {
+        background: rgba(15, 20, 38, 0.5);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 10px;
+        padding: 1.5rem 1.2rem;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .metric-wrap .metric-title {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.35);
+        margin-bottom: 0.6rem;
+    }
+    .metric-wrap .metric-value {
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: #e05555;
+        line-height: 1;
+    }
+    .metric-wrap .metric-sub {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.28);
+        margin-top: 0.35rem;
+        font-weight: 300;
+    }
+    .metric-wrap .metric-note {
+        font-size: 0.68rem;
+        color: rgba(255,255,255,0.2);
+        margin-top: 1.2rem;
+        font-weight: 300;
+        line-height: 1.5;
+    }
+
+    /* ── Footer ── */
     .app-footer {
         text-align: center;
-        font-size: 0.78rem;
-        color: rgba(255,255,255,0.3);
-        margin-top: 2.5rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255,255,255,0.08);
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.35);
+        margin-top: 3rem;
+        padding: 1.2rem 0 0.5rem 0;
+        border-top: 1px solid rgba(255,255,255,0.07);
+        font-weight: 300;
+    }
+    .app-footer a {
+        color: rgba(255,255,255,0.45) !important;
+        text-decoration: none;
+    }
+    .app-footer a:hover {
+        color: rgba(255,255,255,0.75) !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── Header ──────────────────────────────────────────────
+# ── Hero ────────────────────────────────────────────────
 st.markdown("""
-<div class="app-header">
-    <h1>🧠 Brain Tumor MRI Segmentation</h1>
-    <p>Upload an MRI scan to detect and segment the tumor region using a trained U-Net model.</p>
+<div class="hero">
+    <h1>Brain Tumor MRI Segmentation</h1>
+    <p>Upload a brain MRI scan to automatically detect and segment the tumor region using a U-Net deep learning model.</p>
+    <div class="hero-links">
+        <span class="hero-tag">U-Net</span>
+        <span class="hero-tag">PyTorch</span>
+        <span class="hero-tag">Binary Segmentation</span>
+        <a class="hero-github" href="https://github.com/claudiacazacu/BrainTumorMRIsegmentation" target="_blank">
+            &#9679; GitHub
+        </a>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -148,45 +257,44 @@ if uploaded_file is not None:
     predicted_mask_image = mask_to_image(mask_np)
     overlay_image = create_overlay(original_image, mask_np)
 
-    # Tumor area %
     tumor_pct = float(np.sum(mask_np) / mask_np.size * 100)
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">Segmentation Results</div>', unsafe_allow_html=True)
 
-    # ── Metric row ───────────────────────────────────────
-    _, metric_col, _ = st.columns([3, 2, 3])
-    with metric_col:
-        st.markdown(f"""
-        <div style="text-align:center;">
-            <div class="metric-label">Estimated Tumor Area</div>
-            <div class="metric-badge">{tumor_pct:.2f}% of scan</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ── Image columns ────────────────────────────────────
-    col1, col2, col3 = st.columns(3, gap="medium")
+    col1, col2, col3, col4 = st.columns([4, 4, 4, 3], gap="medium")
 
     with col1:
-        st.markdown('<div class="result-card"><h4>Original MRI</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="result-card"><div class="card-label">Original MRI</div>', unsafe_allow_html=True)
         st.image(original_image, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="result-card"><h4>Predicted Mask</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="result-card"><div class="card-label">Predicted Mask</div>', unsafe_allow_html=True)
         st.image(predicted_mask_image, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col3:
-        st.markdown('<div class="result-card"><h4>Overlay</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="result-card"><div class="card-label">Overlay</div>', unsafe_allow_html=True)
         st.image(overlay_image, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
+
+    with col4:
+        st.markdown(f"""
+        <div class="metric-wrap">
+            <div class="metric-title">Tumor Area</div>
+            <div class="metric-value">{tumor_pct:.1f}%</div>
+            <div class="metric-sub">of total scan area</div>
+            <div class="metric-note">Percentage is computed relative to the full image area, not the brain region alone.</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # ── Footer ───────────────────────────────────────────────
 st.markdown("""
 <div class="app-footer">
     Brain Tumor MRI Segmentation &nbsp;·&nbsp; Claudia Cazacu &nbsp;·&nbsp; University of Bucharest &nbsp;·&nbsp; 2026
+    &nbsp;·&nbsp;
+    <a href="https://github.com/claudiacazacu/BrainTumorMRIsegmentation" target="_blank">GitHub</a>
 </div>
 """, unsafe_allow_html=True)
