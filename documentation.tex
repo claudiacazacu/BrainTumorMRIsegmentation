@@ -69,19 +69,20 @@ This approach reduced the need for manual experimentation and contributed to obt
 
 \section{Results}
 
-Table~\ref{tab:results} summarizes the performance of each training run. Three experiments were conducted in total. The baseline configuration with $\text{LR}=10^{-4}$ achieved the best results overall. The higher learning rate of $10^{-3}$ led to worse convergence, suggesting that the optimization landscape for this task requires smaller gradient steps. The augmented run performed comparably to the baseline, with a slight decrease in Dice Score that is likely explained by the fact that augmented data requires more epochs to converge, as the model encounters more diverse samples per epoch.
+Table~\ref{tab:results} summarizes the performance of each training run. Four experiments were conducted in total. The higher learning rate of $10^{-3}$ led to the worst convergence, suggesting that smaller gradient steps are more appropriate for this task. The augmented run at 20 epochs performed slightly below the baseline, which is expected — augmented data introduces more variability per epoch and therefore requires more time to converge. Extending the augmented training to 40 epochs confirmed this hypothesis, achieving the best overall result with a validation Dice Score of \textbf{0.8569} and IoU of \textbf{0.7629}, surpassing the baseline by 1.4 percentage points.
 
 \begin{table}[h]
 \centering
 \caption{Model Performance Across Experiments}
 \label{tab:results}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccccc}
 \toprule
-Run & LR & Aug. & Val Dice & Val IoU \\
+Run & LR & Aug. & Epochs & Val Dice & Val IoU \\
 \midrule
-Baseline  & $10^{-4}$ & No  & 0.8431 & 0.7460 \\
-Higher LR & $10^{-3}$ & No  & 0.8299 & 0.7311 \\
-Augmented & $10^{-4}$ & Yes & 0.8382 & 0.7404 \\
+Baseline           & $10^{-4}$ & No  & 20 & 0.8431 & 0.7460 \\
+Higher LR          & $10^{-3}$ & No  & 20 & 0.8299 & 0.7311 \\
+Augmented 20ep     & $10^{-4}$ & Yes & 20 & 0.8382 & 0.7404 \\
+Augmented 40ep     & $10^{-4}$ & Yes & 40 & \textbf{0.8569} & \textbf{0.7629} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -95,16 +96,25 @@ Fig.~\ref{fig:baseline} shows the training and validation curves for the baselin
     \label{fig:baseline}
 \end{figure}
 
-Fig.~\ref{fig:augmented} shows the same metrics for the augmented run. Compared to the baseline, the curves show slightly slower convergence in the early epochs, which is expected when augmentation is applied, as the model encounters more diverse inputs per epoch. The final performance is nonetheless comparable.
+Fig.~\ref{fig:augmented} shows the same metrics for the augmented 20-epoch run. Compared to the baseline, the curves show slightly slower convergence in the early epochs, which is expected when augmentation is applied, as the model encounters more diverse inputs per epoch.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=\columnwidth]{combined_metrics_augmented.png}
-    \caption{Training vs. validation Loss, Dice Score, and IoU — With augmentation (LR=$10^{-4}$).}
+    \caption{Training vs. validation Loss, Dice Score, and IoU — Augmented, 20 epochs (LR=$10^{-4}$).}
     \label{fig:augmented}
 \end{figure}
 
-Fig.~\ref{fig:comparison} provides a direct comparison of all three runs. The baseline consistently achieves the highest validation Dice Score, while the higher learning rate run converges to a lower performance plateau. The augmented run tracks closely to the baseline, suggesting that with more epochs, augmentation could surpass the non-augmented result.
+Fig.~\ref{fig:augmented40} shows the augmented run extended to 40 epochs. The validation Dice Score continues to improve up to epoch 39, confirming that augmentation requires more epochs to reach its full potential. This run achieved the best overall result with a validation Dice Score of 0.8569.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\columnwidth]{combined_metrics_augmented_40ep.png}
+    \caption{Training vs. validation Loss, Dice Score, and IoU — Augmented, 40 epochs (LR=$10^{-4}$). Best overall result.}
+    \label{fig:augmented40}
+\end{figure}
+
+Fig.~\ref{fig:comparison} provides a direct comparison of all four runs. The augmented 40-epoch run achieves the highest validation Dice Score, while the higher learning rate run converges to the lowest performance. The results confirm that augmentation combined with sufficient training epochs yields the best generalization.
 
 \begin{figure}[!ht]
     \centering
