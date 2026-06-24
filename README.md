@@ -11,6 +11,8 @@ The goal is to identify the tumor region in an MRI scan and generate a binary se
 - Streamlit
 - NumPy
 - Pillow
+- Matplotlib
+- tqdm
 
 ## Dataset
 
@@ -45,11 +47,11 @@ A higher IoU means better prediction quality.
 
 ## Results
 
-The model achieved approximately:
+Across the four training runs (baseline, higher LR, augmented 20ep, augmented 40ep):
 
 ```text
-Validation Dice Score: 0.85 - 0.86
-Validation IoU Score: 0.75 - 0.76
+Validation Dice Score: 0.83 - 0.86  (best: 0.8569, augmented 40ep)
+Validation IoU Score:  0.73 - 0.76  (best: 0.7629, augmented 40ep)
 ```
 
 ## Training
