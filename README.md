@@ -5,14 +5,14 @@ The goal is to identify the tumor region in an MRI scan and generate a binary se
 
 ## Technologies Used
 
-- Python
-- PyTorch
-- U-Net
-- Streamlit
-- NumPy
-- Pillow
-- Matplotlib
-- tqdm
+- **Python** — core programming language used throughout the project
+- **PyTorch** — deep learning framework used to build and train the segmentation model
+- **U-Net** — convolutional neural network architecture used for the segmentation task
+- **Streamlit** — used to build the web interface for uploading images and viewing predictions
+- **NumPy** — numerical operations and array handling
+- **Pillow** — image loading and processing
+- **Matplotlib** — plotting training curves and result figures
+- **tqdm** — progress bars during training and evaluation
 
 ## Dataset
 
