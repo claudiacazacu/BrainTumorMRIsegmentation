@@ -20,7 +20,7 @@
 \maketitle
 
 \begin{abstract}
-This paper presents a deep learning approach for binary segmentation of brain tumors from MRI images using the U-Net architecture. The model is trained to produce a pixel-level mask identifying the tumor region. Multiple training experiments were conducted to evaluate the effect of data augmentation and learning rate on model performance. The best configuration achieved a validation Dice Score of 0.8431 and a validation IoU of 0.7460. The model is deployed through a Streamlit web interface that displays the segmentation result and estimates the tumor area as a percentage of the total scan.
+This paper presents a deep learning approach for binary segmentation of brain tumors from MRI images using the U-Net architecture. The model is trained to produce a pixel-level mask identifying the tumor region. Multiple training experiments were conducted to evaluate the effect of data augmentation and learning rate on model performance. The best configuration achieved a validation Dice Score of 0.8569 and a validation IoU of 0.7629. The model is deployed through a Streamlit web interface that displays the segmentation result and estimates the tumor area as a percentage of the total scan.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -57,15 +57,9 @@ Validation metrics were monitored throughout training to evaluate the model's ab
 
 \subsection{Augmentation}
 
-To increase the diversity of the training data, several augmentation techniques were applied exclusively to the training set. These transformations included horizontal flips (applied with 50\% probability), vertical flips (30\% probability), random rotations of 90°, 180°, or 270° (50\% probability), brightness adjustments of up to $\pm$20\%, and Gaussian noise with a standard deviation of 0.02 (30\% probability). All geometric transformations were applied identically to both the image and its corresponding mask to preserve label consistency.
+To increase the diversity of the training data, several augmentation techniques were applied exclusively to the training set. These transformations included horizontal flips (applied with 50\% probability), vertical flips (30\% probability), random rotations of 90°, 180°, or 270° (50\% probability), brightness adjustments of up to $\pm$20\% (50\% probability), and Gaussian noise with a standard deviation of 0.02 (30\% probability). All geometric transformations were applied identically to both the image and its corresponding mask to preserve label consistency.
 
 Data augmentation artificially generates new training samples from existing images, helping the model become more robust to variations that may occur in real-world MRI scans. As a result, the risk of overfitting is reduced and the model is encouraged to learn more generalizable features.
-
-\subsection{Hyperparameter Optimization with Optuna}
-
-After establishing a baseline model, Optuna \cite{optuna} was used to perform automated hyperparameter optimization. Different combinations of learning rates, batch sizes, optimizer parameters, and other training settings were evaluated through multiple trials. Optuna efficiently searches the hyperparameter space using a Tree-structured Parzen Estimator (TPE) algorithm, which prioritizes configurations that are likely to improve upon previous results.
-
-This approach reduced the need for manual experimentation and contributed to obtaining a more accurate segmentation model. The best hyperparameter combination identified by Optuna was subsequently used for final model training.
 
 \section{Results}
 
@@ -131,14 +125,13 @@ The Streamlit interface allows users to upload the MRI image, and receive instan
 
 Throughout working on this project, I gained a lot of knowledge regarding how machine learning works in practice. From having to understand the importance of the dataset and how to preprocess the data, all the way to trying different ways of training the model in order to end up with a better result, it all has helped me to understand the fundamentals of this subset of Artificial Intelligence on a deeper level.
 
-The experiments showed that a lower learning rate is more suitable for this task, and that data augmentation is a promising direction that would likely yield better results with a higher epoch count. Future work could explore training with more epochs on the augmented dataset, applying Optuna to find the optimal hyperparameter configuration automatically, and extending the model to produce multi-class segmentation masks that distinguish between different tumor types or grades.
+The experiments showed that a lower learning rate is more suitable for this task, and that data augmentation is a promising direction that would likely yield better results with a higher epoch count. Future work could explore training with more epochs on the augmented dataset, applying automated hyperparameter optimization to find the optimal configuration systematically, and extending the model to produce multi-class segmentation masks that distinguish between different tumor types or grades.
 
 \begin{thebibliography}{00}
 \bibitem{unet} O. Ronneberger, P. Fischer, and T. Brox, ``U-Net: Convolutional networks for biomedical image segmentation,'' in \textit{Proc. MICCAI}, 2015, pp. 234--241.
 \bibitem{brisc} BRISC2025 Dataset, Kaggle. [Online]. Available: https://www.kaggle.com
 \bibitem{pytorch} A. Paszke et al., ``PyTorch: An imperative style, high-performance deep learning library,'' \textit{Advances in Neural Information Processing Systems}, vol. 32, 2019.
 \bibitem{streamlit} Streamlit. [Online]. Available: https://streamlit.io
-\bibitem{optuna} T. Akiba, S. Sano, T. Yanase, T. Ohta, and M. Koyama, ``Optuna: A next-generation hyperparameter optimization framework,'' in \textit{Proc. KDD}, 2019.
 \end{thebibliography}
 
 \end{document}
