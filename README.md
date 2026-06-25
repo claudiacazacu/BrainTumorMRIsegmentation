@@ -24,7 +24,7 @@ Only the segmentation part of the dataset was used.
 - MRI image preprocessing with optional data augmentation
 - U-Net model for tumor segmentation
 - Training and validation using PyTorch
-- Experiment tracking — each training run saved separately in `experiments/`
+- Experiment tracking - each training run saved separately in `experiments/`
 - Streamlit interface for uploading MRI images
 - Display of the original image, predicted mask, and overlay result
 - Tumor area percentage calculated from the predicted mask
@@ -63,8 +63,8 @@ python src/train.py
 ```
 
 Each run is saved in `experiments/run_<timestamp>/` and contains:
-- `combined_metrics.png` — Loss, Dice, IoU train vs. val in one figure
-- `metrics_table.png` — final metrics table
+- `combined_metrics.png` - Loss, Dice, IoU train vs. val in one figure
+- `metrics_table.png` - final metrics table
 - `training_history.json` / `training_history.csv`
 - `best_model.pth`
 - `config.json`
@@ -78,8 +78,8 @@ python src/compare_experiments.py
 ```
 
 Generates in `outputs/`:
-- `experiments_comparison_table.png` — side-by-side metrics for all runs
-- `experiments_comparison_curves.png` — overlaid val Dice and IoU curves
+- `experiments_comparison_table.png` - side-by-side metrics for all runs
+- `experiments_comparison_curves.png` - overlaid val Dice and IoU curves
 
 ## Project Structure
 
