@@ -29,7 +29,6 @@ st.markdown("""
     [data-testid="stAppViewContainer"] { padding-top: 0; }
     [data-testid="stMainBlockContainer"] { padding-top: 0; }
 
-    /* ── Hero ── */
     .hero {
         background: linear-gradient(135deg, #1a2540 0%, #2d3f60 60%, #3a4f72 100%);
         border-radius: 16px;
@@ -106,7 +105,6 @@ st.markdown("""
         color: white !important;
     }
 
-    /* ── Upload ── */
     [data-testid="stFileUploader"] {
         background-color: rgba(15, 20, 38, 0.45);
         border: 1.5px dashed rgba(255,255,255,0.13);
@@ -114,7 +112,6 @@ st.markdown("""
         padding: 0.4rem 0.8rem;
     }
 
-    /* ── Section label ── */
     .section-label {
         font-size: 0.68rem;
         font-weight: 600;
@@ -125,14 +122,12 @@ st.markdown("""
         margin-top: 0.5rem;
     }
 
-    /* ── Divider ── */
     .divider {
         border: none;
         border-top: 1px solid rgba(255,255,255,0.07);
         margin: 1.8rem 0;
     }
 
-    /* ── Result cards ── */
     .result-card {
         background: rgba(15, 20, 38, 0.5);
         border-radius: 10px;
@@ -149,7 +144,6 @@ st.markdown("""
         margin-bottom: 0.7rem;
     }
 
-    /* ── Metric ── */
     .metric-wrap {
         background: rgba(15, 20, 38, 0.5);
         border: 1px solid rgba(255,255,255,0.07);
@@ -189,7 +183,6 @@ st.markdown("""
         line-height: 1.5;
     }
 
-    /* ── Footer ── */
     .app-footer {
         text-align: center;
         font-size: 0.85rem;
@@ -210,7 +203,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ── Hero ────────────────────────────────────────────────
 st.markdown("""
 <div class="hero">
     <h1>Brain Tumor MRI Segmentation</h1>
@@ -227,7 +219,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ── Load model ──────────────────────────────────────────
 @st.cache_resource
 def get_model():
     return load_model()
@@ -242,7 +233,6 @@ except Exception as error:
     st.stop()
 
 
-# ── Upload ───────────────────────────────────────────────
 uploaded_file = st.file_uploader(
     "Drag and drop or browse an MRI image (JPG, PNG, TIF)",
     type=["jpg", "jpeg", "png", "bmp", "tif", "tiff"],
@@ -290,7 +280,6 @@ if uploaded_file is not None:
         """, unsafe_allow_html=True)
 
 
-# ── Footer ───────────────────────────────────────────────
 st.markdown("""
 <div class="app-footer">
     Brain Tumor MRI Segmentation &nbsp;·&nbsp; Claudia Cazacu &nbsp;·&nbsp; University of Bucharest &nbsp;·&nbsp; 2026

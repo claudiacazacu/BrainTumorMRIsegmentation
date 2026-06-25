@@ -36,7 +36,6 @@ def preprocess_pair(image_path: Path, mask_path: Path, out_image: Path, out_mask
     image = image.resize(IMG_SIZE)
     mask = mask.resize(IMG_SIZE)
 
-    # mască binară: 0 = background, 255 = tumoră
     mask = mask.point(lambda p: 255 if p > 0 else 0)
 
     image.save(out_image)
@@ -64,13 +63,12 @@ def get_pairs(split_name):
     images = find_image_files(image_dir)
     masks = find_image_files(mask_dir)
 
-    # creează dicționar: nume_fără_extensie -> mask_path
     mask_dict = {m.stem: m for m in masks}
 
     pairs = []
 
     for image_path in images:
-        image_name = image_path.stem  # fără extensie
+        image_name = image_path.stem
 
         if image_name in mask_dict:
             pairs.append((image_path, mask_dict[image_name]))

@@ -171,12 +171,11 @@ def save_history(run_folder, history):
 def save_plots(run_folder, history):
     epochs = [row["epoch"] for row in history]
 
-    LW = 2.5  # line width
+    LW = 2.5
 
     fig, axes = plt.subplots(1, 3, figsize=(10, 3))
     fig.suptitle("Training vs Validation Metrics", fontsize=11, fontweight="bold")
 
-    # Loss
     axes[0].plot(epochs, [row["train_loss"] for row in history], label="Train", color="#1f77b4", linewidth=LW)
     axes[0].plot(epochs, [row["val_loss"] for row in history], label="Val", color="#ff7f0e", linestyle="--", linewidth=LW)
     axes[0].set_xlabel("Epoch", fontsize=8)
@@ -186,7 +185,6 @@ def save_plots(run_folder, history):
     axes[0].tick_params(labelsize=7)
     axes[0].grid(True, linewidth=0.5)
 
-    # Dice
     axes[1].plot(epochs, [row["train_dice"] for row in history], label="Train", color="#1f77b4", linewidth=LW)
     axes[1].plot(epochs, [row["val_dice"] for row in history], label="Val", color="#ff7f0e", linestyle="--", linewidth=LW)
     axes[1].set_xlabel("Epoch", fontsize=8)
@@ -196,7 +194,6 @@ def save_plots(run_folder, history):
     axes[1].tick_params(labelsize=7)
     axes[1].grid(True, linewidth=0.5)
 
-    # IoU
     axes[2].plot(epochs, [row["train_iou"] for row in history], label="Train", color="#1f77b4", linewidth=LW)
     axes[2].plot(epochs, [row["val_iou"] for row in history], label="Val", color="#ff7f0e", linestyle="--", linewidth=LW)
     axes[2].set_xlabel("Epoch", fontsize=8)
@@ -210,7 +207,6 @@ def save_plots(run_folder, history):
     plt.savefig(run_folder / "combined_metrics.png", dpi=200, bbox_inches="tight")
     plt.close()
 
-    # Keep individual plots for backward compatibility
     plt.figure(figsize=(8, 5))
     plt.plot(epochs, [row["train_loss"] for row in history], label="Train Loss")
     plt.plot(epochs, [row["val_loss"] for row in history], label="Validation Loss")
@@ -249,7 +245,6 @@ def save_plots(run_folder, history):
 
 
 def save_metrics_table(run_folder, history):
-    """Save a PNG table with final epoch metrics (best val dice epoch + last epoch)."""
     best = max(history, key=lambda r: r["val_dice"])
     last = history[-1]
 
@@ -277,12 +272,10 @@ def save_metrics_table(run_folder, history):
     table.set_fontsize(11)
     table.scale(1.2, 1.6)
 
-    # Header row styling
     for col in range(3):
         table[(0, col)].set_facecolor("#2c7bb6")
         table[(0, col)].set_text_props(color="white", fontweight="bold")
 
-    # Highlight best val dice row (row index 4 = Val Dice)
     for col in range(3):
         table[(5, col)].set_facecolor("#d4edda")
 

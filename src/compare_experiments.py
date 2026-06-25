@@ -1,14 +1,3 @@
-"""
-compare_experiments.py
-----------------------
-Citeste toate runurile din experiments/ si genereaza:
-  - outputs/experiments_comparison_table.png  — tabel comparativ cu metrici finale
-  - outputs/experiments_comparison_curves.png — grafic suprapus val Dice + val IoU pentru toate runurile
-
-Rulare:
-    python src/compare_experiments.py
-"""
-
 import json
 from pathlib import Path
 
@@ -22,7 +11,6 @@ OUTPUTS_DIR = Path("outputs")
 
 
 def load_runs():
-    """Incarca config + training history din fiecare run folder."""
     runs = []
 
     for run_folder in sorted(EXPERIMENTS_DIR.iterdir()):
@@ -58,8 +46,7 @@ def load_runs():
 
 
 def save_comparison_table(runs, output_path):
-    """Salveaza un tabel PNG cu metrici finale pentru fiecare run."""
-    headers = ["Run", "LR", "Batch", "Epochs", "Augment", "Best Val Dice", "Best Val IoU", "Final Val Loss"]
+    headers =["Run", "LR", "Batch", "Epochs", "Augment", "Best Val Dice", "Best Val IoU", "Final Val Loss"]
 
     rows = []
     for r in runs:
@@ -91,17 +78,14 @@ def save_comparison_table(runs, output_path):
     table.scale(1.0, 1.6)
     table.auto_set_column_width(col=list(range(len(headers))))
 
-    # Header styling
     for col in range(len(headers)):
         table[(0, col)].set_facecolor("#2c7bb6")
         table[(0, col)].set_text_props(color="white", fontweight="bold")
 
-    # Highlight best val dice row (col 5 = Best Val Dice)
     best_idx = max(range(len(rows)), key=lambda i: float(rows[i][5]))
     for col in range(len(headers)):
         table[(best_idx + 1, col)].set_facecolor("#d4edda")
 
-    # Alternating row colors
     for row_idx in range(len(rows)):
         if row_idx == best_idx:
             continue
@@ -117,7 +101,6 @@ def save_comparison_table(runs, output_path):
 
 
 def save_comparison_curves(runs, output_path):
-    """Salveaza un grafic suprapus cu val Dice si val IoU pentru toate runurile."""
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     fig.suptitle("Validation Metrics Across Experiments", fontsize=14, fontweight="bold")
 

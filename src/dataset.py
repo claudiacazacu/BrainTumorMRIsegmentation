@@ -44,30 +44,23 @@ class BrainTumorDataset(Dataset):
         return len(self.images)
 
     def _augment(self, image, mask):
-        """Aplica aceleasi transformari random pe imagine SI masca."""
-
-        # Horizontal flip
         if random.random() < 0.5:
             image = np.fliplr(image).copy()
             mask = np.fliplr(mask).copy()
 
-        # Vertical flip
         if random.random() < 0.3:
             image = np.flipud(image).copy()
             mask = np.flipud(mask).copy()
 
-        # Rotatie 90/180/270 grade
         if random.random() < 0.5:
             k = random.choice([1, 2, 3])
             image = np.rot90(image, k).copy()
             mask = np.rot90(mask, k).copy()
 
-        # Brightness (doar pe imagine, nu pe masca)
         if random.random() < 0.5:
             factor = random.uniform(0.8, 1.2)
             image = np.clip(image * factor, 0.0, 1.0)
 
-        # Gaussian noise (doar pe imagine)
         if random.random() < 0.3:
             noise = np.random.normal(0, 0.02, image.shape).astype(np.float32)
             image = np.clip(image + noise, 0.0, 1.0)
